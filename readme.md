@@ -1,8 +1,6 @@
 ## Speed Up Your Python Program With Concurrency
 
-
-
-#### What Is Concurrency?
+### What Is Concurrency?
 
 The dictionary definition of concurrency is simultaneous occurrence. In Python, the things that are occurring simultaneously are called by different names (thread, task, process) but at a high level, they all refer to a sequence of instructions that run in order. only `multiprocessing` actually runs these trains of thought at literally the same time. `Threading` and `asyncio` both run on a single processor and therefore only run one at a time. They just cleverly find ways to take turns to speed up the overall process. Even though they don’t run different trains of thought simultaneously, we still call this concurrency.
 
@@ -12,13 +10,13 @@ Pre-emptive multitasking is handy in that the code in the thread doesn’t need 
 
 `Asyncio`, on the other hand, uses cooperative multitasking. The tasks must cooperate by announcing when they are ready to be switched out. That means that the code in the task has to change slightly to make this happen.
 
-#### What Is Parallelism?
+### What Is Parallelism?
 
 With `multiprocessing`, Python creates new processes. A process here can be thought of as almost a completely different program, though technically they’re usually defined as a collection of resources where the resources include memory, file handles and things like that. One way to think about it is that each process runs in its own Python interpreter.
 
 Because they are different processes, each of your trains of thought in a multiprocessing program can run on a different core. Running on a different core means that they actually can run at the same time, which is fabulous. There are some complications that arise from doing this, but Python does a pretty good job of smoothing them over most of the time.
 
-#### When Is Concurrency Useful?
+### When Is Concurrency Useful?
 
 Concurrency can make a big difference for two types of problems. These are generally called CPU-bound and I/O-bound.
 
@@ -28,29 +26,19 @@ Examples of things that are slower than your CPU are legion, but your program th
 
 Let’s see what that looks like:
 
-
-
 ![i](https://files.realpython.com/media/IOBound.4810a888b457.png)
-
-
 
 On the flip side, there are classes of programs that do significant computation without talking to the network or accessing a file. These are the CPU-bound programs, because the resource limiting the speed of your program is the CPU, not the network or the file system.
 
 Here’s a corresponding diagram for a CPU-bound program:
 
-
-
 ![i](https://files.realpython.com/media/CPUBound.d2d32cb2626c.png)
 
-
-
-#### How to Speed Up an I/O-Bound Program
+## How to Speed Up an I/O-Bound Program
 
 example 1: lets download some web pages.
 
-
-
-##### Synchronous Version
+### Synchronous Version
 
 ```
 import requests
@@ -91,7 +79,7 @@ The big problem here is that it’s relatively slow compared to the other soluti
 Downloaded 160 in 14.289619207382202 seconds
 ```
 
-##### threading Version
+### threading Version
 
 ```
 import concurrent.futures
@@ -141,11 +129,7 @@ Downloaded 160 in 3.7238826751708984 seconds
 
 It uses multiple threads to have multiple open requests out to web sites at the same time, allowing your program to overlap the waiting times and get the final result faster! Yippee! That was the goal.
 
-
-
 ![w](https://files.realpython.com/media/Threading.3eef48da829e.png)
-
-
 
 **Disadvantages**
 
@@ -157,7 +141,7 @@ Threads can interact in ways that are subtle and hard to detect. These interacti
 
 What’s going on here is that the operating system is controlling when your thread runs and when it gets swapped out to let another thread run. This thread swapping can occur at any point, even while doing sub-steps of a Python statement.
 
-#### asyncio Version
+### asyncio Version
 
 The general concept of `asyncio` is that a single Python object, called the event loop, controls how and when each task gets run. The event loop is aware of each task and knows what state it’s in. In reality, there are many states that tasks could be in, but for now let’s imagine a simplified event loop that just has two states.
 
@@ -210,11 +194,7 @@ Downloaded 160 in 2.5727896690368652 seconds
 
 The scaling issue also looms large here. Running the `threading` example above with a thread for each site is noticeably slower than running it with a handful of threads. Running the `asyncio` example with hundreds of tasks didn’t slow it down at all.
 
-
-
 ![d](https://files.realpython.com/media/Asyncio.31182d3731cf.png)
-
-
 
 **Disadvantages**
 
@@ -222,7 +202,7 @@ There are a couple of issues with `asyncio` at this point. You need special asyn
 
 Another, more subtle, issue is that all of the advantages of cooperative multitasking get thrown away if one of the tasks doesn’t cooperate. A minor mistake in code can cause a task to run off and hold the processor for a long time, starving other tasks that need running. There is no way for the event loop to break in if a task does not hand control back to it.
 
-#### multiprocessing Version
+### multiprocessing Version
 
 ```
 import requests
@@ -264,11 +244,7 @@ if __name__ == "__main__":
 
 The `multiprocessing` version of this example is great because it’s relatively easy to set up and requires little extra code. It also takes full advantage of the CPU power in your computer. The execution timing diagram for this code looks like this:
 
-
-
 ![i](https://files.realpython.com/media/MProc.7cf3be371bbc.png)
-
-
 
 **Disadvantages**
 
@@ -278,7 +254,7 @@ This version of the example does require some extra setup, and the global `sessi
 Downloaded 160 in 5.718175172805786 seconds
 ```
 
-#### How to Speed Up a CPU-Bound Program
+## How to Speed Up a CPU-Bound Program
 
 For the purposes of our example, we’ll use a function to create something that takes a long time to run on the CPU. This function computes the sum of the squares of each number from 0 to the passed-in value:
 
@@ -287,7 +263,7 @@ def cpu_bound(number):
     return sum(i * i for i in range(number))
 ```
 
-##### Synchronous Version
+### Synchronous Version
 
 ```
 import time
@@ -317,7 +293,7 @@ Unlike the I/O-bound examples, the CPU-bound examples are usually fairly consist
 Duration 7.834432125091553 seconds
 ```
 
-##### threading and asyncio Versions
+### threading and asyncio Versions
 
 In your I/O-bound example above, much of the overall time was spent waiting for slow operations to finish. `threading` and `asyncio` sped this up by allowing you to overlap the times you were waiting instead of doing them sequentially.
 
@@ -368,8 +344,4 @@ There are some drawbacks to using `multiprocessing`. They don’t really show up
 
 Also, many solutions require more communication between the processes. This can add some complexity to your solution that a non-concurrent program would not need to deal with.
 
-
-
 Source: [https://realpython.com/](https://realpython.com/)
-
-
